@@ -1,13 +1,182 @@
-<html>
-    <head>
-        <title>Recipe Sharing</title>
-        <style></style>
-    </head>
-    <body>
-        <nav>
+<!DOCTYPE html>
+<html lang="en">
 
-        </nav>
-        <footer></footer>
-    </body>
-    <script></script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Sharing App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f4f4f4;
+        }
+
+        header {
+            background: linear-gradient(90deg, #ff7e5f, #feb47b);
+            padding: 20px;
+            text-align: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            background: #333;
+            padding: 10px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+        }
+
+        nav a:hover {
+            background: #555;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        input,
+        textarea,
+        select,
+        button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+        }
+
+        button {
+            background: #ff7e5f;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .recipes {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .recipe-card {
+            background: white;
+            padding: 15px;
+            margin: 10px;
+            width: 45%;
+            border-radius: 10px;
+        }
+
+        .recipe-card h3 {
+            color: #ff7e5f;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid black;
+            padding: 5px;
+            text-align: left;
+        }
+
+        .filter {
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .recipe-card {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>Recipe Sharing App</header>
+    <nav>
+        <a href="#add-recipe">Add Recipe</a>
+        <a href="#view-recipes">View Recipes</a>
+    </nav>
+    <div class="container">
+        <section id="add-recipe">
+            <h2>Add a Recipe</h2>
+            <form id="recipe-form">
+                <input type="text" id="name" placeholder="Recipe Name" required>
+                <textarea id="ingredients" placeholder="Ingredients (comma-separated)" required></textarea>
+                <select id="category">
+                    <option>Breakfast</option>
+                    <option>Lunch</option>
+                    <option>Dinner</option>
+                    <option>Dessert</option>
+                    <option>Drinks</option>
+                </select>
+                <textarea id="steps" placeholder="Preparation Steps" required></textarea>
+                <button type="submit">Add Recipe</button>
+            </form>
+        </section>
+        <section id="view-recipes">
+            <h2>View Recipes</h2>
+            <select id="filter" class="filter">
+                <option value="all">All</option>
+                <option value="Breakfast">Breakfast</option>
+                <option value="Lunch">Lunch</option>
+                <option value="Dinner">Dinner</option>
+                <option value="Dessert">Dessert</option>
+                <option value="Drinks">Drinks</option>
+            </select>
+            <div class="recipes" id="recipe-list"></div>
+        </section>
+    </div>
+    <script>
+        document.getElementById("recipe-form").addEventListener("submit", function (e) {
+            e.preventDefault();
+            let name = document.getElementById("name").value;
+            let ingredients = document.getElementById("ingredients").value.split(",");
+            let category = document.getElementById("category").value;
+            let steps = document.getElementById("steps").value;
+            let recipes = JSON.parse(localStorage.getItem("recipes")) || [];
+            recipes.push({ name, ingredients, category, steps });
+            localStorage.setItem("recipes", JSON.stringify(recipes));
+            document.getElementById("recipe-form").reset();
+            displayRecipes();
+        });
+        function displayRecipes() {
+            let recipes = JSON.parse(localStorage.getItem("recipes")) || [];
+            let filter = document.getElementById("filter").value;
+            let recipeList = document.getElementById("recipe-list");
+            recipeList.innerHTML = "";
+            recipes.filter(r => filter === "all" || r.category === filter).forEach(r => {
+                let div = document.createElement("div");
+                div.className = "recipe-card";
+                div.innerHTML = `<h3>${r.name}</h3><p><b>Category:</b> ${r.category}</p>
+                <table><tr><th>Ingredients</th></tr>${r.ingredients.map(i => `<tr><td>${i}</td></tr>`).join("")}</table>
+                <p>${r.steps}</p>`;
+                recipeList.appendChild(div);
+            });
+        }
+        document.getElementById("filter").addEventListener("change", displayRecipes);
+        displayRecipes();
+    </script>
+</body>
+
 </html>
